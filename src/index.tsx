@@ -10,10 +10,10 @@ if (rootElement) {
   createRoot(rootElement).render(
 
     <Provider store={store}>
-      <ErrorBoundary>
+      {/* <ErrorBoundary> */}
       {/* <Router/>    */}
       <App/>
-      </ErrorBoundary>
+      {/* </ErrorBoundary> */}
     </Provider>
 
   );
