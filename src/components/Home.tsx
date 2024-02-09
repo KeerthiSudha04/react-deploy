@@ -2,41 +2,38 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+/* styles.css */
+
+
 
 const Home: React.FC = () => {
   return (
-    <div className="text-center">
-      <div>
-        <Link to="/Hoc" className="btn btn-primary">
-          Navigate to Loader Component
-        </Link>
-      </div>
-      <br />
-      <div>
-        <Link to="/Redux" className="btn btn-primary">
-          Navigate to Redux Component
-        </Link>
-      </div>
-      <br />
-      <div>
-        <Link to="/Auth" className="btn btn-primary">
-          Navigate to Authentication Component
-        </Link>
-      </div>
-      <br />
-      <div>
-        <Link to="/Styling" className="btn btn-primary">
-          Navigate to Styled Component
-        </Link>
-      </div>
-      <br />
-      <div>
-        <Link to="/Optimize" className="btn btn-primary">
-          Navigate to Optimize Component
-        </Link>
-      </div>
-      <br />
+
+      <div style={{textAlign:'center', paddingTop: '100px' }}>
+      <h1><b>Welcome to My Home Page!</b></h1>
+      <h2>This is the landing page of My website.</h2>
+      <nav style={{ marginTop: '20px'}}>
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+          <li style={{ display: 'inline', marginRight: '10px' }}>
+            <Link to="/Hoc" style={{ textDecoration: 'none', color: 'blue' }}>Loader</Link>
+          </li>
+          <li style={{ display: 'inline', marginRight: '10px' }}>
+            <Link to="/Redux" style={{ textDecoration: 'none', color: 'blue' }}>Redux</Link>
+          </li>
+          <li style={{ display: 'inline', marginRight: '10px' }}>
+            <Link to="/Auth" style={{ textDecoration: 'none', color: 'blue' }}>Authentication</Link>
+          </li>
+          <li style={{ display: 'inline', marginRight: '10px' }}>
+            <Link to="/Styling" style={{ textDecoration: 'none', color: 'blue' }}>Styled Component</Link>
+          </li>
+          <li style={{ display: 'inline', marginRight: '10px' }}>
+            <Link to="/Optimize" style={{ textDecoration: 'none', color: 'blue' }}>Optimization</Link>
+          </li>
+        </ul>
+      </nav>
     </div>
+    
+    
   );
 };
 

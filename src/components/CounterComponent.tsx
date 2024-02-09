@@ -11,10 +11,11 @@ const CounterComponent: React.FC = () => {
   const dispatch = useDispatch();
 
   return (
-    <div>
+    <div style={{textAlign:'center',paddingTop:'50px'}}>
       <h1>Asynchronous Operations with Redux Thunk</h1>
-      <p>Counter: {count}</p>
+      <h2>Counter: {count}</h2>
       <button onClick={() => dispatch({ type: 'INCREMENT' })}>Increment</button>
+      
       <button onClick={() => dispatch({ type: 'DECREMENT' })}>Decrement</button>
     </div>
   );

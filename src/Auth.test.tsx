@@ -1,52 +1,137 @@
 
+// import React from 'react';
+// import { render, fireEvent, waitFor,getByRole, screen } from '@testing-library/react';
+// import '@testing-library/jest-dom/extend-expect'; // for enhanced Jest matchers
+// // import AuthComponent from './components/AuthComponent';
+// import { authenticateUser, User } from './mockBackend';// Import the mockBackend functions
+
+// // Mock the authenticateUser function
+// jest.mock('./mockBackend', () => ({
+//   authenticateUser: jest.fn(),
+// }));
+
+// describe('AuthComponent', () => {
+//   it('renders login form', () => {
+//     render(<AuthComponent onLogin={() => {}} />);
+//     expect(screen.getByLabelText('Username:')).toBeInTheDocument();
+//     expect(screen.getByLabelText('Password:')).toBeInTheDocument();
+//     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+//   });
+
+//   it('calls authenticateUser with username and password on form submission', async () => {
+//     render(<AuthComponent onLogin={() => {}} />);
+//     const usernameInput = screen.getByLabelText('Username:') as HTMLInputElement;
+//     const passwordInput = screen.getByLabelText('Password:') as HTMLInputElement;
+//     const loginButton = screen.getByRole('button', { name: 'Login' });
+
+//     // Set input values
+//     fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+//     fireEvent.change(passwordInput, { target: { value: 'password' } });
+
+//     // Mock authenticateUser to return a dummy user
+//     (authenticateUser as jest.Mock).mockResolvedValueOnce({ username: 'testuser' });
+
+//     // Submit form
+//     fireEvent.click(loginButton);
+
+//     // Wait for authentication to complete
+//     await waitFor(() => expect(authenticateUser).toHaveBeenCalledWith('testuser', 'password'));
+//   });
+
+//   it('displays error message if authentication fails', async () => {
+//     render(<AuthComponent onLogin={() => {}} />);
+//     const usernameInput = screen.getByLabelText('Username:') as HTMLInputElement;
+//     const passwordInput = screen.getByLabelText('Password:') as HTMLInputElement;
+//     const loginButton = screen.getByRole('button', { name: 'Login' });
+
+//     // Set input values
+//     fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+//     fireEvent.change(passwordInput, { target: { value: 'password' } });
+
+//     // Mock authenticateUser to throw an error
+//     (authenticateUser as jest.Mock).mockRejectedValueOnce(new Error('Invalid credentials'));
+
+//     // Submit form
+//     fireEvent.click(loginButton);
+
+//     // Wait for error message to be displayed
+//     await waitFor(() => expect(screen.getByText('Invalid credentials')).toBeInTheDocument());
+//   });
+// });
+
+
+
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import Auth from './Auth';
+import { authenticateUser } from './mockBackend';
 
-// Mock the AuthComponent to simulate its behavior
-jest.mock('./components/AuthComponent', () => {
-    return jest.fn(props => <div data-testid="mock-auth-component" />);
-});
+jest.mock('./mockBackend', () => ({
+  authenticateUser: jest.fn()
+}));
 
-describe('Auth Component', () => {
-    it('renders AuthComponent when user is not logged in', () => {
-        const { getByTestId } = render(<Auth />);
-        expect(getByTestId('mock-auth-component')).toBeInTheDocument();
-    });
+describe('Auth', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    it('renders welcome message and logout button when user is logged in', () => {
-        const { getByText, queryByTestId } = render(<Auth />);
+  it('should render login form initially', () => {
+    const { getByText, getByLabelText } = render(<Auth />);
+    expect(getByText('Login Page')).toBeInTheDocument();
+    expect(getByLabelText('Username:')).toBeInTheDocument();
+    expect(getByLabelText('Password:')).toBeInTheDocument();
+    expect(getByText('Login')).toBeInTheDocument();
+  });
 
-        // Simulate login by setting user state
-  
-        const authComponent = queryByTestId('mock-auth-component');
-        if (authComponent) {
-            fireEvent.click(authComponent as HTMLElement);
-        }
+  it('should handle successful login', async () => {
+    const user = { username: 'testuser', email: 'test@example.com' };
+    (authenticateUser as jest.Mock).mockResolvedValue(user);
 
+    const { getByLabelText, getByText } = render(<Auth />);
 
-        // Check if welcome message and logout button are rendered
-        expect(getByText('Welcome, testuser!')).toBeInTheDocument();
-        expect(getByText('Logout')).toBeInTheDocument();
-    });
+    fireEvent.change(getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(getByLabelText('Password:'), { target: { value: 'testpassword' } });
+    fireEvent.click(getByText('Login'));
 
-    it('logs out user when Logout button is clicked', () => {
-        const { getByText, queryByText } = render(<Auth />);
+    await waitFor(() => expect(getByText(`Welcome, ${user.username}!`)).toBeInTheDocument());
+    expect(getByText('Logout')).toBeInTheDocument();
+    expect(authenticateUser).toHaveBeenCalledWith('testuser', 'testpassword');
+  });
 
-        // Simulate login by setting user state
+  it('should handle login failure', async () => {
+    const errorMessage = 'Invalid username or password';
+    (authenticateUser as jest.Mock).mockRejectedValue(new Error(errorMessage));
 
-        const authComponent = queryByText('mock-auth-component');
-        if (authComponent !== null) {
-            fireEvent.click(authComponent);
-        }
+    const { getByLabelText, getByText } = render(<Auth />);
 
-        // Check if logout button is rendered
-        expect(getByText('Logout')).toBeInTheDocument();
+    fireEvent.change(getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(getByLabelText('Password:'), { target: { value: 'testpassword' } });
+    fireEvent.click(getByText('Login'));
 
-        // Simulate logout by clicking logout button
-        fireEvent.click(getByText('Logout'));
+    await waitFor(() => expect(getByText(errorMessage)).toBeInTheDocument());
+    expect(getByText('Login Page')).toBeInTheDocument();
+    expect(getByLabelText('Username:')).toBeInTheDocument();
+    expect(getByLabelText('Password:')).toBeInTheDocument();
+    expect(getByText('Login')).toBeInTheDocument();
+  });
 
-        // Check if user state is null after logout
-        expect(queryByText('Logout')).not.toBeInTheDocument();
-    });
+  it('should handle logout', async () => {
+    const user = { username: 'testuser', email: 'test@example.com' };
+    (authenticateUser as jest.Mock).mockResolvedValue(user);
+
+    const { getByLabelText, getByText } = render(<Auth />);
+    
+    fireEvent.change(getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(getByLabelText('Password:'), { target: { value: 'testpassword' } });
+    fireEvent.click(getByText('Login'));
+    
+    await waitFor(() => expect(getByText(`Welcome, ${user.username}!`)).toBeInTheDocument());
+
+    fireEvent.click(getByText('Logout'));
+
+    expect(getByText('Login Page')).toBeInTheDocument();
+    expect(getByLabelText('Username:')).toBeInTheDocument();
+    expect(getByLabelText('Password:')).toBeInTheDocument();
+    expect(getByText('Login')).toBeInTheDocument();
+  });
 });

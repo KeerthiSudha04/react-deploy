@@ -1,11 +1,11 @@
-// Dashboard.tsx
+
 import React from 'react';
 import withLoadingIndicator from '../HOC/Hoc'
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   return (
     <div>
-      <h1>Dashboard</h1>
-      {/* Dashboard content */}
+      <h1>This content is displayed from wrapped component </h1>
+     
     </div>
   );
 };

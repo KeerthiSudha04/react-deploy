@@ -1,7 +1,6 @@
-// reducers.ts
+
 
 import { combineReducers } from 'redux';
-// import { INCREMENT,DECREMENT } from '../../Actions/actionTypes';
 
 export interface CounterState {
   count: number;
